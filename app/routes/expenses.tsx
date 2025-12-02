@@ -102,7 +102,7 @@ export default function Expenses() {
       }
 
       const data = await response.json();
-
+      console.log("DATA----->", data);
       if (data.error) {
         throw new Error(data.error);
       }
@@ -112,7 +112,7 @@ export default function Expenses() {
         (order: Transaction) => !existingIds.has(order.id)
       );
 
-      if (newTransactions.length > 0) {
+      if (true) {
         const merged = [...newTransactions, ...transactions].sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );

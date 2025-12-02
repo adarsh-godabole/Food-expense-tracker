@@ -138,24 +138,60 @@ export function parseOrderEmail(email: any) {
   // Extract items from email body
   const extractItems = (emailBody: string): string[] => {
     const items: string[] = [];
+    const skipWords = [
+      'item name', 'items', 'item', 'name', 'quantity', 'qty', 'price', 'amount',
+      'item total', 'delivery', 'discount', 'tax', 'cgst', 'sgst', 'charges',
+      'fee', 'subtotal', 'grand total', 'total', 'bill', 'packaging', 'platform',
+      'order', 'gst', 'packing', 'handling', 'tip', 'donation', 'saved', 'you saved'
+    ];
 
-    // Primary pattern: <td width='50%' style='font-size: 15px'>ITEM NAME</td>
-    const tdPattern = /<td\s+width=['"]50%['"]\s+style=['"]font-size:\s*15px['"]>([^<]+)<\/td>/gi;
-    const tdMatches = emailBody.matchAll(tdPattern);
+    // Strategy 1: Find "Item Name" header and extract cells below it
+    const itemNameHeaderPattern = /<t[dh][^>]*>\s*(item\s*name|items?|dish\s*name)\s*<\/t[dh]>/gi;
+    const headerMatch = itemNameHeaderPattern.exec(emailBody);
 
-    for (const match of tdMatches) {
-      const item = match[1]?.trim();
-      if (item && item.length > 2 && item.length < 100) {
-        // Filter out common non-item text
-        const skipWords = ['item total', 'delivery', 'discount', 'tax', 'cgst', 'sgst', 'charges', 'fee', 'subtotal', 'grand total', 'total', 'bill', 'packaging', 'platform'];
-        const lowerItem = item.toLowerCase();
-        if (!skipWords.some(word => lowerItem === word || lowerItem.includes(word))) {
-          items.push(item);
+    if (headerMatch) {
+      // Found the header, now extract all td cells after it in the same table
+      const afterHeader = emailBody.substring(headerMatch.index);
+      // Look for td elements with meaningful content
+      const cellPattern = /<td[^>]*>([^<]+)<\/td>/gi;
+      let cellMatch;
+
+      while ((cellMatch = cellPattern.exec(afterHeader)) !== null) {
+        const cellText = cellMatch[1]?.trim();
+        if (cellText && cellText.length > 2 && cellText.length < 100) {
+          const lowerText = cellText.toLowerCase();
+
+          // Skip if it's a number, price, or skip word
+          const isNumber = /^[\d.,₹\sRs]+$/.test(cellText);
+          const isSkipWord = skipWords.some(word => lowerText === word || lowerText.includes(word));
+
+          if (!isNumber && !isSkipWord) {
+            items.push(cellText);
+          }
+        }
+
+        // Stop after collecting reasonable number or reaching end of table
+        if (items.length >= 20 || cellMatch[0].includes('</table>')) break;
+      }
+    }
+
+    // Strategy 2: Look for specific styled cells (original approach)
+    if (items.length === 0) {
+      const tdPattern = /<td\s+width=['"]50%['"]\s+style=['"]font-size:\s*15px['"]>([^<]+)<\/td>/gi;
+      const tdMatches = emailBody.matchAll(tdPattern);
+
+      for (const match of tdMatches) {
+        const item = match[1]?.trim();
+        if (item && item.length > 2 && item.length < 100) {
+          const lowerItem = item.toLowerCase();
+          if (!skipWords.some(word => lowerItem === word || lowerItem.includes(word))) {
+            items.push(item);
+          }
         }
       }
     }
 
-    // Fallback patterns if the specific TD pattern doesn't match
+    // Strategy 3: Fallback patterns
     if (items.length === 0) {
       const fallbackPatterns = [
         /<td[^>]*>([A-Z][A-Za-z\s&',.-]{3,50}?)<\/td>/gi,
@@ -167,8 +203,9 @@ export function parseOrderEmail(email: any) {
         for (const match of matches) {
           const item = match[1]?.trim();
           if (item && item.length > 2 && item.length < 100) {
-            const skipWords = ['order', 'total', 'subtotal', 'delivery', 'discount', 'tax', 'cgst', 'sgst', 'charges', 'amount', 'grand', 'bill', 'fee', 'packaging'];
-            if (!skipWords.some(word => item.toLowerCase().includes(word))) {
+            const lowerItem = item.toLowerCase();
+            const isNumber = /^[\d.,₹\sRs]+$/.test(item);
+            if (!isNumber && !skipWords.some(word => lowerItem.includes(word))) {
               items.push(item);
             }
           }
