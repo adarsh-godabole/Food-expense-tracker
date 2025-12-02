@@ -303,20 +303,26 @@ export default function Expenses() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow relative overflow-hidden opacity-60">
+            <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+              COMING SOON
+            </div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-sm font-medium text-gray-500">
                 Zomato Total
               </span>
-              <span className="bg-red-100 text-red-600 text-xs font-semibold px-2 py-1 rounded">
+              <span className="bg-gray-100 text-gray-500 text-xs font-semibold px-2 py-1 rounded">
                 ZOMATO
               </span>
             </div>
-            <div className="text-3xl font-bold text-red-600">
+            <div className="text-3xl font-bold text-gray-400">
               ₹{zomatoTotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xs text-gray-400 mt-1">
               {filteredTransactions.filter(t => t.platform === "zomato").length} orders
+            </div>
+            <div className="text-xs text-yellow-600 mt-2 font-medium">
+              🚧 Email parsing under development
             </div>
           </div>
 
@@ -403,14 +409,14 @@ export default function Expenses() {
                 Swiggy
               </button>
               <button
-                onClick={() => setFilterPlatform("zomato")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filterPlatform === "zomato"
-                    ? "bg-red-500 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+                disabled
+                className="px-4 py-2 rounded-lg font-medium transition-colors bg-gray-50 text-gray-400 cursor-not-allowed relative"
+                title="Zomato support coming soon"
               >
                 Zomato
+                <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+                  SOON
+                </span>
               </button>
             </div>
           </div>

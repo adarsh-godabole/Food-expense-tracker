@@ -49,7 +49,10 @@ export default function Home() {
             Food Expense Tracker
           </h1>
           <p className="text-white/90 text-lg">
-            Track your Swiggy & Zomato spending
+            Track your Swiggy spending
+          </p>
+          <p className="text-white/70 text-sm mt-1">
+            (Zomato support coming soon)
           </p>
         </div>
 
@@ -60,7 +63,7 @@ export default function Home() {
               Welcome Back
             </h2>
             <p className="text-gray-600">
-              Sign in with Google to view your food delivery expenses
+              Sign in with Google to view your Swiggy delivery expenses
             </p>
           </div>
 
