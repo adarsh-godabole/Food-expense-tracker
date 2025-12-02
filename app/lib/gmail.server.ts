@@ -21,21 +21,35 @@ export async function getTokenFromCode(code: string) {
   return tokens;
 }
 
-export async function fetchOrderEmails(accessToken: string) {
+export async function fetchOrderEmails(
+  accessToken: string,
+  startDate?: string,
+  endDate?: string
+) {
   oauth2Client.setCredentials({ access_token: accessToken });
   const gmail = google.gmail({ version: "v1", auth: oauth2Client });
 
-  // Calculate date 2 months ago
-  const twoMonthsAgo = new Date();
-  twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
-  const dateString = twoMonthsAgo.toISOString().split('T')[0].replace(/-/g, '/');
+  // Use provided dates or default to 2 months ago
+  let afterDate: string;
+  let beforeDate: string;
 
-  // Search for emails from Swiggy and Zomato from last 2 months
+  if (startDate && endDate) {
+    // Convert YYYY-MM-DD to YYYY/MM/DD format for Gmail query
+    afterDate = startDate.replace(/-/g, '/');
+    beforeDate = endDate.replace(/-/g, '/');
+  } else {
+    const twoMonthsAgo = new Date();
+    twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+    afterDate = twoMonthsAgo.toISOString().split('T')[0].replace(/-/g, '/');
+    beforeDate = new Date().toISOString().split('T')[0].replace(/-/g, '/');
+  }
+
+  // Search for emails from Swiggy and Zomato within date range
   const queries = [
-    `from:noreply@swiggy.in after:${dateString}`,
-    `from:no-reply@zomato.com after:${dateString}`,
-    `from:orders@swiggy.in after:${dateString}`,
-    `from:order@zomato.com after:${dateString}`,
+    `from:noreply@swiggy.in after:${afterDate} before:${beforeDate}`,
+    `from:no-reply@zomato.com after:${afterDate} before:${beforeDate}`,
+    `from:orders@swiggy.in after:${afterDate} before:${beforeDate}`,
+    `from:order@zomato.com after:${afterDate} before:${beforeDate}`,
   ];
 
   const allEmails = [];

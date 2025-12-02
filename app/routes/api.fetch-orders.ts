@@ -4,13 +4,19 @@ import { fetchOrderEmails, parseOrderEmail } from "../lib/gmail.server";
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const accessToken = url.searchParams.get("access_token");
+  const startDate = url.searchParams.get("start_date");
+  const endDate = url.searchParams.get("end_date");
 
   if (!accessToken) {
     return Response.json({ error: "No access token provided" }, { status: 400 });
   }
 
   try {
-    const emails = await fetchOrderEmails(accessToken);
+    const emails = await fetchOrderEmails(
+      accessToken,
+      startDate || undefined,
+      endDate || undefined
+    );
     const orders = emails
       .map((email) => parseOrderEmail(email))
       .filter((order) => order !== null);
