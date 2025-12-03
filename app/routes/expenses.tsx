@@ -63,6 +63,7 @@ export default function Expenses() {
   // Handle OAuth callback
   useEffect(() => {
     const token = searchParams.get("access_token");
+    const refreshToken = searchParams.get("refresh_token");
     const errorParam = searchParams.get("error");
 
     if (errorParam) {
@@ -71,6 +72,9 @@ export default function Expenses() {
     } else if (token) {
       setAccessToken(token);
       localStorage.setItem("gmail_access_token", token);
+      if (refreshToken) {
+        localStorage.setItem("gmail_refresh_token", refreshToken);
+      }
       setSearchParams({});
       fetchOrdersFromGmail(token);
     } else {
@@ -88,7 +92,29 @@ export default function Expenses() {
     }
   }, [transactions]);
 
-  const fetchOrdersFromGmail = async (token: string) => {
+  const refreshToken = async (): Promise<string | null> => {
+    const refresh = localStorage.getItem("gmail_refresh_token");
+    if (!refresh) return null;
+
+    try {
+      const response = await fetch(
+        `/api/refresh-token?refresh_token=${encodeURIComponent(refresh)}`
+      );
+      const data = await response.json();
+
+      if (data.access_token) {
+        localStorage.setItem("gmail_access_token", data.access_token);
+        setAccessToken(data.access_token);
+        return data.access_token;
+      }
+      return null;
+    } catch (error) {
+      console.error("Failed to refresh token:", error);
+      return null;
+    }
+  };
+
+  const fetchOrdersFromGmail = async (token: string, isRetry = false) => {
     setIsSyncing(true);
     setError(null);
 
@@ -103,6 +129,23 @@ export default function Expenses() {
 
       const data = await response.json();
       console.log("DATA----->", data);
+
+      // Check for authentication errors
+      if (data.error && (data.error.includes("invalid") || data.error.includes("authentication"))) {
+        // Try to refresh token if not already retried
+        if (!isRetry) {
+          const newToken = await refreshToken();
+          if (newToken) {
+            return fetchOrdersFromGmail(newToken, true);
+          }
+        }
+        // If refresh failed or already retried, clear tokens and redirect
+        localStorage.removeItem("gmail_access_token");
+        localStorage.removeItem("gmail_refresh_token");
+        setAccessToken(null);
+        throw new Error("Session expired. Please log in again.");
+      }
+
       if (data.error) {
         throw new Error(data.error);
       }
@@ -112,22 +155,14 @@ export default function Expenses() {
         (order: Transaction) => !existingIds.has(order.id)
       );
 
-      if (true) {
-        const merged = [...newTransactions, ...transactions].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        setTransactions(merged);
-        alert(`Successfully imported ${newTransactions.length} new orders!`);
-      } else {
-        alert("No new orders found.");
-      }
+      const merged = [...newTransactions, ...transactions].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      setTransactions(merged);
+      alert(`Successfully imported ${newTransactions.length} new orders!`);
     } catch (err: any) {
       console.error("Error fetching orders:", err);
       setError(err.message || "Failed to fetch orders from Gmail");
-      if (err.message?.includes("invalid")) {
-        localStorage.removeItem("gmail_access_token");
-        setAccessToken(null);
-      }
     } finally {
       setIsSyncing(false);
     }
@@ -144,6 +179,7 @@ export default function Expenses() {
 
   const handleLogout = () => {
     localStorage.removeItem("gmail_access_token");
+    localStorage.removeItem("gmail_refresh_token");
     localStorage.removeItem("foodExpenses");
     setAccessToken(null);
     navigate("/");

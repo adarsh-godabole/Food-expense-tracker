@@ -21,6 +21,12 @@ export async function getTokenFromCode(code: string) {
   return tokens;
 }
 
+export async function refreshAccessToken(refreshToken: string) {
+  oauth2Client.setCredentials({ refresh_token: refreshToken });
+  const { credentials } = await oauth2Client.refreshAccessToken();
+  return credentials;
+}
+
 export async function fetchOrderEmails(
   accessToken: string,
   startDate?: string,
