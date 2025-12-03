@@ -134,6 +134,7 @@ export default function Expenses() {
   };
 
   const handleGmailSync = () => {
+    console.log("🔄 Sync button clicked - Latest deployment confirmed!");
     if (accessToken) {
       fetchOrdersFromGmail(accessToken);
     } else {
