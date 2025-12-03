@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams, useNavigate } from "react-router";
+import { useSearchParams, useNavigate, Link } from "react-router";
 import type { Route } from "./+types/expenses";
 
 export function meta({}: Route.MetaArgs) {
@@ -586,6 +586,17 @@ export default function Expenses() {
               </table>
             </div>
           )}
+        </div>
+
+        {/* Footer Links */}
+        <div className="mt-8 text-center text-gray-600 text-sm space-x-4">
+          <Link to="/privacy" className="hover:text-purple-600 underline">
+            Privacy Policy
+          </Link>
+          <span>•</span>
+          <Link to="/terms" className="hover:text-purple-600 underline">
+            Terms & Conditions
+          </Link>
         </div>
       </div>
     </div>

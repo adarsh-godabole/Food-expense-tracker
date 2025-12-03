@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
@@ -133,6 +133,17 @@ export default function Home() {
             <div className="text-2xl font-bold">🔒</div>
             <div className="text-sm mt-1">Private</div>
           </div>
+        </div>
+
+        {/* Footer Links */}
+        <div className="mt-8 text-center text-white/80 text-sm space-x-4">
+          <Link to="/privacy" className="hover:text-white underline">
+            Privacy Policy
+          </Link>
+          <span>•</span>
+          <Link to="/terms" className="hover:text-white underline">
+            Terms & Conditions
+          </Link>
         </div>
       </div>
     </div>
