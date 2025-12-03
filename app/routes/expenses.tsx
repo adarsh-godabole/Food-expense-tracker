@@ -401,26 +401,40 @@ export default function Expenses() {
           </h3>
           <div className="flex flex-wrap gap-4 items-end">
             <div className="flex-1 min-w-[200px]">
-              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+              <label htmlFor="start-date" className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1 cursor-pointer">
                 📅 Start Date
               </label>
               <input
+                id="start-date"
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-purple-200 bg-purple-50 text-gray-900 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white transition-colors font-medium"
+                onClick={(e) => {
+                  const input = e.currentTarget;
+                  if ('showPicker' in input) {
+                    (input as any).showPicker();
+                  }
+                }}
+                className="w-full px-4 py-3 border-2 border-purple-200 bg-white text-gray-900 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors font-medium cursor-pointer"
               />
             </div>
 
             <div className="flex-1 min-w-[200px]">
-              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
-                📅 End Date111
+              <label htmlFor="end-date" className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1 cursor-pointer">
+                📅 End Date
               </label>
               <input
+                id="end-date"
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-purple-200 bg-purple-50 text-gray-900 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white transition-colors font-medium"
+                onClick={(e) => {
+                  const input = e.currentTarget;
+                  if ('showPicker' in input) {
+                    (input as any).showPicker();
+                  }
+                }}
+                className="w-full px-4 py-3 border-2 border-purple-200 bg-white text-gray-900 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors font-medium cursor-pointer"
               />
             </div>
 
