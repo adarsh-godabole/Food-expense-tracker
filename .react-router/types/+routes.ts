@@ -17,6 +17,12 @@ type Pages = {
   "/expenses": {
     params: {};
   };
+  "/privacy": {
+    params: {};
+  };
+  "/terms": {
+    params: {};
+  };
   "/api/auth": {
     params: {};
   };
@@ -31,7 +37,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/expenses" | "/api/auth" | "/api/auth/callback" | "/api/fetch-orders";
+    page: "/" | "/expenses" | "/privacy" | "/terms" | "/api/auth" | "/api/auth/callback" | "/api/fetch-orders";
   };
   "routes/home.tsx": {
     id: "routes/home";
@@ -40,6 +46,14 @@ type RouteFiles = {
   "routes/expenses.tsx": {
     id: "routes/expenses";
     page: "/expenses";
+  };
+  "routes/privacy.tsx": {
+    id: "routes/privacy";
+    page: "/privacy";
+  };
+  "routes/terms.tsx": {
+    id: "routes/terms";
+    page: "/terms";
   };
   "routes/api.auth.ts": {
     id: "routes/api.auth";
@@ -59,6 +73,8 @@ type RouteModules = {
   "root": typeof import("./app/root.tsx");
   "routes/home": typeof import("./app/routes/home.tsx");
   "routes/expenses": typeof import("./app/routes/expenses.tsx");
+  "routes/privacy": typeof import("./app/routes/privacy.tsx");
+  "routes/terms": typeof import("./app/routes/terms.tsx");
   "routes/api.auth": typeof import("./app/routes/api.auth.ts");
   "routes/api.auth.callback": typeof import("./app/routes/api.auth.callback.ts");
   "routes/api.fetch-orders": typeof import("./app/routes/api.fetch-orders.ts");
