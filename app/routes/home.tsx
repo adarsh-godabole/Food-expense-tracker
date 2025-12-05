@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, Link } from "react-router";
 import type { Route } from "./+types/home";
+import { Logo } from "~/components/Logo";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -29,21 +30,8 @@ export default function Home() {
       <div className="max-w-md w-full">
         {/* Logo/Icon */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg mb-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 text-orange-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-              />
-            </svg>
+          <div className="inline-flex items-center justify-center mb-4">
+            <Logo className="w-20 h-20 drop-shadow-2xl" />
           </div>
           <h1 className="text-4xl font-bold text-white mb-2">
             Food Expense Tracker
