@@ -79,6 +79,52 @@ export default function Privacy() {
               We use OAuth 2.0 for secure authentication with Google. Your Gmail password is never
               shared with us.
             </p>
+
+            <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-3">4.1 Data Protection Mechanisms</h3>
+            <p>
+              We implement the following security measures to protect your sensitive data:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 mt-4">
+              <li>
+                <strong>Encryption in Transit:</strong> All data transmitted between your browser and
+                Google's servers uses HTTPS/TLS encryption to prevent interception or tampering.
+              </li>
+              <li>
+                <strong>Secure Token Storage:</strong> OAuth 2.0 access tokens and refresh tokens are
+                stored in browser localStorage with same-origin policy protection, ensuring only our
+                application can access them.
+              </li>
+              <li>
+                <strong>Client-Side Processing:</strong> All email parsing and data extraction occurs
+                entirely in your browser. Email content is never transmitted to external servers.
+              </li>
+              <li>
+                <strong>Minimal Data Retention:</strong> We only extract and store essential order
+                information (date, amount, restaurant, items). Full email content is not retained.
+              </li>
+              <li>
+                <strong>Scoped API Access:</strong> Gmail API access is limited to read-only permissions
+                for emails matching specific filters (from:swiggy.in, from:zomato.com). We cannot send
+                emails or access other account data.
+              </li>
+              <li>
+                <strong>Token Expiration:</strong> Access tokens automatically expire and are refreshed
+                using secure OAuth 2.0 flows. Users can revoke access at any time through Google Account
+                settings.
+              </li>
+              <li>
+                <strong>No Server-Side Storage:</strong> We do not maintain any databases or server-side
+                storage of your personal information, Gmail data, or authentication credentials.
+              </li>
+              <li>
+                <strong>Automatic Data Clearing:</strong> All locally stored data is automatically cleared
+                when you log out or revoke access permissions.
+              </li>
+              <li>
+                <strong>Security Audits:</strong> Our codebase follows industry best practices for secure
+                web application development and is regularly reviewed for security vulnerabilities.
+              </li>
+            </ul>
           </section>
 
           <section>
