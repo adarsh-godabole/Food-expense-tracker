@@ -97,10 +97,23 @@ export default function Expenses() {
     const refresh = localStorage.getItem("gmail_refresh_token");
     if (!refresh) return null;
 
+    // Get OAuth credentials
+    const storedCreds = localStorage.getItem("google_oauth_credentials");
+    if (!storedCreds) {
+      console.error("OAuth credentials not found");
+      return null;
+    }
+
     try {
-      const response = await fetch(
-        `/api/refresh-token?refresh_token=${encodeURIComponent(refresh)}`
-      );
+      const credentials = JSON.parse(storedCreds);
+      const params = new URLSearchParams({
+        refresh_token: refresh,
+        client_id: credentials.clientId,
+        client_secret: credentials.clientSecret,
+        redirect_uri: credentials.redirectUri,
+      });
+
+      const response = await fetch(`/api/refresh-token?${params.toString()}`);
       const data = await response.json();
 
       if (data.access_token) {
@@ -119,10 +132,26 @@ export default function Expenses() {
     setIsSyncing(true);
     setError(null);
 
+    // Get OAuth credentials
+    const storedCreds = localStorage.getItem("google_oauth_credentials");
+    if (!storedCreds) {
+      setError("OAuth credentials not configured. Please go to setup.");
+      setIsSyncing(false);
+      return;
+    }
+
     try {
-      const response = await fetch(
-        `/api/fetch-orders?access_token=${encodeURIComponent(token)}&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`
-      );
+      const credentials = JSON.parse(storedCreds);
+      const params = new URLSearchParams({
+        access_token: token,
+        start_date: startDate,
+        end_date: endDate,
+        client_id: credentials.clientId,
+        client_secret: credentials.clientSecret,
+        redirect_uri: credentials.redirectUri,
+      });
+
+      const response = await fetch(`/api/fetch-orders?${params.toString()}`);
 
       if (!response.ok) {
         throw new Error("Failed to fetch orders");

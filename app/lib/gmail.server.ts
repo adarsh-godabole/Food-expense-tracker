@@ -1,12 +1,21 @@
 import { google } from "googleapis";
 
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
-);
+interface OAuthCredentials {
+  clientId: string;
+  clientSecret: string;
+  redirectUri: string;
+}
 
-export function getAuthUrl() {
+function createOAuthClient(credentials: OAuthCredentials) {
+  return new google.auth.OAuth2(
+    credentials.clientId,
+    credentials.clientSecret,
+    credentials.redirectUri
+  );
+}
+
+export function getAuthUrl(credentials: OAuthCredentials) {
+  const oauth2Client = createOAuthClient(credentials);
   const scopes = ["https://www.googleapis.com/auth/gmail.readonly"];
 
   return oauth2Client.generateAuthUrl({
@@ -16,22 +25,26 @@ export function getAuthUrl() {
   });
 }
 
-export async function getTokenFromCode(code: string) {
+export async function getTokenFromCode(code: string, credentials: OAuthCredentials) {
+  const oauth2Client = createOAuthClient(credentials);
   const { tokens } = await oauth2Client.getToken(code);
   return tokens;
 }
 
-export async function refreshAccessToken(refreshToken: string) {
+export async function refreshAccessToken(refreshToken: string, credentials: OAuthCredentials) {
+  const oauth2Client = createOAuthClient(credentials);
   oauth2Client.setCredentials({ refresh_token: refreshToken });
-  const { credentials } = await oauth2Client.refreshAccessToken();
-  return credentials;
+  const { credentials: newCredentials } = await oauth2Client.refreshAccessToken();
+  return newCredentials;
 }
 
 export async function fetchOrderEmails(
   accessToken: string,
+  credentials: OAuthCredentials,
   startDate?: string,
   endDate?: string
 ) {
+  const oauth2Client = createOAuthClient(credentials);
   oauth2Client.setCredentials({ access_token: accessToken });
   const gmail = google.gmail({ version: "v1", auth: oauth2Client });
 

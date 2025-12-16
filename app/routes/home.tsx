@@ -22,7 +22,26 @@ export default function Home() {
   }, [navigate]);
 
   const handleGoogleLogin = () => {
-    window.location.href = "/api/auth";
+    // Check if credentials are configured
+    const storedCreds = localStorage.getItem("google_oauth_credentials");
+    if (!storedCreds) {
+      navigate("/setup");
+      return;
+    }
+
+    try {
+      const credentials = JSON.parse(storedCreds);
+      const params = new URLSearchParams({
+        client_id: credentials.clientId,
+        client_secret: credentials.clientSecret,
+        redirect_uri: credentials.redirectUri,
+      });
+
+      window.location.href = `/api/auth?${params.toString()}`;
+    } catch (error) {
+      console.error("Failed to load credentials", error);
+      navigate("/setup");
+    }
   };
 
   return (
@@ -80,7 +99,7 @@ export default function Home() {
             Continue with Google
           </button>
 
-          <div className="mt-6 pt-6 border-t border-gray-200">
+          <div className="mt-6 pt-6 border-t border-gray-200 space-y-4">
             <div className="flex items-start gap-3 text-sm text-gray-600">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -103,6 +122,18 @@ export default function Home() {
                   on external servers.
                 </p>
               </div>
+            </div>
+
+            <div className="bg-blue-50 rounded-lg p-3 text-sm">
+              <p className="text-blue-800 mb-1">
+                <strong>First time?</strong> You need to configure your own Google OAuth credentials.
+              </p>
+              <Link
+                to="/setup"
+                className="text-blue-600 hover:text-blue-700 font-medium underline"
+              >
+                Click here to set up →
+              </Link>
             </div>
           </div>
         </div>
