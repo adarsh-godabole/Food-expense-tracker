@@ -1,30 +1,59 @@
-# Welcome to React Router!
+# Food Expense Tracker
 
-A modern, production-ready template for building full-stack React applications using React Router.
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+A privacy-focused web application that automatically fetches and analyzes your Swiggy and Zomato food delivery expenses from Gmail.
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- **Automatic Email Import** - Fetches order confirmation emails from Swiggy and Zomato
+- **Expense Analytics** - View total spending by platform with detailed breakdowns
+- **Date Range Filtering** - Analyze expenses for custom time periods
+- **Privacy-First Design** - No data stored on external servers; all processing happens locally
+- **Transaction History** - Detailed table with order dates, amounts, and items
+- **Responsive UI** - Works seamlessly on desktop and mobile devices
 
-## Getting Started
+## Tech Stack
 
-### Installation
+- **Frontend**: React 19, TypeScript, Tailwind CSS
+- **Backend**: React Router (full-stack framework)
+- **Bundler**: Vite
+- **Authentication**: Google OAuth 2.0
+- **API**: Gmail API for email access
 
-Install the dependencies:
+## Prerequisites
+
+- Node.js 20+
+- Google Cloud Project with Gmail API enabled
+- OAuth 2.0 credentials (Client ID and Client Secret)
+
+## Setup
+
+### 1. Google Cloud Configuration
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the **Gmail API**
+4. Go to **Credentials** → **Create Credentials** → **OAuth 2.0 Client IDs**
+5. Configure the OAuth consent screen
+6. Add authorized redirect URI: `http://localhost:5173/api/auth/callback` (for development)
+7. Download or copy your Client ID and Client Secret
+
+### 2. Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+GOOGLE_CLIENT_ID=your_client_id_here
+GOOGLE_CLIENT_SECRET=your_client_secret_here
+REDIRECT_URI=http://localhost:5173/api/auth/callback
+```
+
+### 3. Installation
 
 ```bash
 npm install
 ```
 
-### Development
+### 4. Development
 
 Start the development server with HMR:
 
@@ -32,7 +61,7 @@ Start the development server with HMR:
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+The application will be available at `http://localhost:5173`
 
 ## Building for Production
 
@@ -42,20 +71,22 @@ Create a production build:
 npm run build
 ```
 
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
+Start the production server:
 
 ```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
+npm start
 ```
 
-The containerized application can be deployed to any platform that supports Docker, including:
+## Docker Deployment
+
+Build and run using Docker:
+
+```bash
+docker build -t food-expense-tracker .
+docker run -p 3000:3000 food-expense-tracker
+```
+
+### Supported Platforms
 
 - AWS ECS
 - Google Cloud Run
@@ -64,24 +95,68 @@ The containerized application can be deployed to any platform that supports Dock
 - Fly.io
 - Railway
 
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
+## Project Structure
 
 ```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+├── app/
+│   ├── components/        # Reusable UI components
+│   ├── lib/
+│   │   └── gmail.server.ts   # Gmail API integration
+│   ├── routes/
+│   │   ├── api.auth.ts           # OAuth initiation
+│   │   ├── api.auth.callback.ts  # OAuth callback handler
+│   │   ├── api.fetch-orders.ts   # Email fetching endpoint
+│   │   ├── home.tsx              # Login page
+│   │   ├── expenses.tsx          # Main dashboard
+│   │   ├── privacy.tsx           # Privacy policy
+│   │   └── terms.tsx             # Terms of service
+│   ├── root.tsx           # App root layout
+│   └── app.css            # Global styles
+├── public/                # Static assets
+├── Dockerfile             # Container configuration
+└── package.json
 ```
 
-## Styling
+## How It Works
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+1. **Authentication**: Users sign in with Google OAuth, granting read-only access to Gmail
+2. **Email Search**: The app searches for order confirmation emails from Swiggy and Zomato
+3. **Parsing**: Email content is parsed to extract order details (date, amount, items)
+4. **Display**: Expenses are displayed in an interactive dashboard with filtering options
+
+## Supported Platforms
+
+| Platform | Status |
+|----------|--------|
+| Swiggy   | Fully supported |
+| Zomato   | Coming soon |
+
+## Privacy
+
+- **No Server Storage**: Order data is never stored on external servers
+- **Local Processing**: All email parsing happens in your browser
+- **Minimal Access**: Only order confirmation emails are accessed
+- **Token Security**: OAuth tokens are stored locally in your browser
+
+For more details, see the [Privacy Policy](/privacy) page in the app.
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Create production build |
+| `npm start` | Run production server |
+| `npm run typecheck` | Run TypeScript type checking |
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is open source.
 
 ---
 
-Built with ❤️ using React Router.
+Built with React Router and Tailwind CSS
